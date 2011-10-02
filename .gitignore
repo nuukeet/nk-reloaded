@@ -1,3 +1,5 @@
 .netrc
 .git
 .gitconfig
+/nbproject/private/
+nbproject
