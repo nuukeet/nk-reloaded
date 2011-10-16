@@ -52,7 +52,7 @@ class DirectoryMapper
      */
     public function setDirectory($directory)
     {
-        $this->$directories[$directory] = $directory;
+        $this->directories[$directory] = $directory;
         
         return $this;
     }
@@ -64,7 +64,7 @@ class DirectoryMapper
      */
     public static function getDirectories()
     {
-       return self::$directories; 
+       return $this->directories; 
     }
     
     /**
