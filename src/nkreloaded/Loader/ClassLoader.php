@@ -17,22 +17,22 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  *
  *
  * @package     Nuukeet
- * @subpackage  nkrLoader
+ * @subpackage  ClassLoader
  * @author      nuukeet <nuukeet@gmail.com>
  * @copyright	Copyright (c) 2011 nk-reloaded project 
  * @link	https://github.com/nuukeet/nk-reloaded
  * @version	$Id: $
  */
 /**
- * @package     nkrLoader
- * @subpackage  Loader
+ * @package     Nuukeet
+ * @subpackage  ClassLoader
  * @author      nuukeet <nuukeet@gmail.com>
  * @copyright	Copyright (c) 2011 nk-reloaded project 
  */
 
-class nkrLoader_Exception extends Exception {}
+class ClassLoader_Exception extends Exception {}
 
-class nkrLoader
+class ClassLoader
 {
     /**
      * class Instance
@@ -99,10 +99,10 @@ class nkrLoader
      *
      * @return void
      */
-    public static function register(ClassFileMapper $classFileMapper)
+    public static function register(DirectoryMapper $directoryMapper)
     {
         self::setClassExtension(self::$classExtension);
-        self::$classPath = realpath(dirname(__DIR__));
+        self::$classPath = $directoryMapper->getDirectories();
         spl_autoload_extensions(self::$classExtension);
         spl_autoload_register(array(new self(), 'classAutoLoad'));
     }
@@ -117,10 +117,13 @@ class nkrLoader
      */
     public function classAutoLoad($className)
     {
+        $directories = array();
         
-        $directories = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$classPath), RecursiveIteratorIterator::SELF_FIRST);
+        foreach(self::$classPath as $path) {       
+            $directories[$path] = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+        }
 
-        foreach($directories as $directory) {
+        foreach($directories as $path => $directory) {
 
             if ($directory->isDir()) {
                 continue;

@@ -17,7 +17,7 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  *
  *
  * @package     Nuukeet
- * @subpackage  nkrClassFileMapper
+ * @subpackage  DirectoryMapper
  * @author      nuukeet <nuukeet@gmail.com>
  * @copyright	Copyright (c) 2011 nk-reloaded project 
  * @link	https://github.com/nuukeet/nk-reloaded
@@ -25,33 +25,42 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  */
 /**
  * @package     Nuukeet
- * @subpackage  nkrClassFileMapper
+ * @subpackage  DirectoryMapper
  * @author      nuukeet <nuukeet@gmail.com>
  * @copyright	Copyright (c) 2011 nk-reloaded project 
  */
 
-class nkrDirectoryMapper
+class DirectoryMapper
 {
     /**
-     *
-     * @var type 
+     * An array of directories
+     * 
+     * @var array
      */
-    protected static $directories = array();
+    protected $directories = array();
+    
     
     
     
     
     /**
-     *
+     * Sets directory where all classes file to load are stored
+     * 
      * @param type $directory 
+     * 
+     * @return DirectoryMapper instance
      */
-    public static function setDirectory($directory)
+    public function setDirectory($directory)
     {
-        self::$directories[$directory] = $directory;
+        $this->$directories[$directory] = $directory;
+        
+        return $this;
     }
     
     /**
+     * Returns all directories
      * 
+     * @return array An array of directories
      */
     public static function getDirectories()
     {
@@ -59,14 +68,19 @@ class nkrDirectoryMapper
     }
     
     /**
-     *
-     * @param array $directories 
+     * Added an array of directories
+     * 
+     * @param array $directories An array of directories
+     * 
+     * @return DirectoryMapper instance
      */
     public static function addDirectories(array $directories = array())
     {
         foreach($directories as $directory) {
-            self::setDirectory($directory);
+            $this->setDirectory($directory);
         }
+        
+        return $this;
     }   
     
     /**

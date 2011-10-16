@@ -17,7 +17,7 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  *
  *
  * @package     Nuukeet
- * @subpackage  nkrConfig
+ * @subpackage  Config
  * @author      nuukeet <nuukeet@gmail.com>
  * @copyright	Copyright (c) 2011 nk-reloaded project 
  * @link	https://github.com/nuukeet/nk-reloaded
@@ -25,13 +25,13 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  */
 /**
  * @package     Nuukeet
- * @subpackage  nkrConfig
+ * @subpackage  Config
  * @author      nuukeet <nuukeet@gmail.com>
  * @copyright	Copyright (c) 2011 nk-reloaded project 
  */
 
 
-abstract class nkrConfig 
+abstract class Config 
 {
     /**
      * An array of paramters
