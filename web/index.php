@@ -1,8 +1,7 @@
 <?php
+require_once realpath(dirname(__FILE__) . '/../') . '/apps/bootstrap.php';
 
-include_once(realpath(__DIR__) . '/../src/nkreloaded/Loader/DirectoryMapper/DirectoryMapper.php');
-include_once(realpath(__DIR__) . '/../src/nkreloaded/Loader/ClassLoader.php');
+$map = ClassMapperLoader::register();
+print_r($map);
 
-
-$directoryMapper = new DirectoryMapper;
-nkrLoader::register($directoryMapper->setDirectory('src')->setDirectory('../lib'));
+$v = new Config();
