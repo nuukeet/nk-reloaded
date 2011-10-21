@@ -2,7 +2,7 @@
 if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
 
 /**
- * This file is part of the nk-reloaded project 
+ * This file is part of the nk-reloaded project
  * A full PHP5 conversion of the Nuked-Klan CMS (Experimental)
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  * @package     Nuukeet
  * @subpackage  ClassLoader
  * @author      nuukeet <nuukeet@gmail.com>
- * @copyright	Copyright (c) 2011 nk-reloaded project 
+ * @copyright	Copyright (c) 2011 nk-reloaded project
  * @link	https://github.com/nuukeet/nk-reloaded
  * @version	$Id: $
  */
@@ -27,38 +27,38 @@ if (! defined('INDEX_CHECK')) exit('No direct script access allowed');
  * @package     Nuukeet
  * @subpackage  ClassLoader
  * @author      nuukeet <nuukeet@gmail.com>
- * @copyright	Copyright (c) 2011 nk-reloaded project 
+ * @copyright	Copyright (c) 2011 nk-reloaded project
  */
 
-class ClassLoader_Exception extends Exception {}
 
 class ClassLoader
 {
     /**
-     * class Instance
+     * ClassLoader Instance
      *
-     * @var Loader
+     * @var ClassLoader
      */
     private static $instance = null;
 
     /**
-     * class file extension 
+     * class file extension
      *
      * @var string
      */
     protected static $classExtension = '.php';
 
     /**
-     * class directory path
+     * namespaces
      *
      * @var string
      */
-    protected static $classPath;
-
+    protected static $ns ;
+    
     /**
+     * Loaded classes
      * @var null
      */
-    protected static $loadedClass = array();
+    protected static $loadedClasses = array();
 
 
 
@@ -67,7 +67,13 @@ class ClassLoader
     /**
      * Constructor
      */
-    final function __construct() {}
+    final function __construct()
+    {
+        // SPL nullify existing autoload
+		spl_autoload_register(null, false);
+        spl_autoload_extensions(self::$classExtension);
+        spl_autoload_register(array(new self(), 'autoLoad'));
+    }
 
     /**
      * No clone allowed
@@ -80,7 +86,7 @@ class ClassLoader
      * Returns current class instance
      *
      * @static
-     * 
+     *
      * @return Loader|null
      */
     public static function getInstance()
@@ -93,38 +99,18 @@ class ClassLoader
     }
 
     /**
-     * Initializes spl_autoload_register
-     *
-     * @static
-     *
-     * @return void
-     */
-    public static function register(DirectoryMapper $directoryMapper)
-    {
-        self::setClassExtension(self::$classExtension);
-        self::$classPath = $directoryMapper->getDirectories();
-        spl_autoload_extensions(self::$classExtension);
-        spl_autoload_register(array(new self(), 'classAutoLoad'));
-    }
-
-    /**
      * Recursively scans all 'libs' directories containing all needed classes
      *
-     * @throws Loader_Exception
+     * @throws ClassLoader_Exception
      * @param $className
      *
      * @return void
      */
-    public function classAutoLoad($className)
+    public function autoLoad($className)
     {
-        $directories = array();
-        
-        foreach(self::$classPath as $path) {       
-            $directories[$path] = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
-        }
+        $directoriesIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(LIBS_ROOT), RecursiveIteratorIterator::SELF_FIRST);
 
-        foreach($directories as $path => $directory) {
-
+        foreach($directoriesIterator as $directory) {
             if ($directory->isDir()) {
                 continue;
             }
@@ -138,7 +124,7 @@ class ClassLoader
     }
 
     /**
-     * Load needed class only
+     * Loads needed class only
      *
      * @throws Loader_Exception
      * @param $className
@@ -154,17 +140,17 @@ class ClassLoader
            throw new Loader_Exception(sprintf(' %s - [Error]: No class file "%s" found in directory %s', get_class($this), $classFileName, self::$classPath));
         }
 
-        foreach($loadedClassFile as $file => $path) {
-            if ($path->getFileName() == $classFileName) {
+        foreach($loadedClassFile as $classFile => $classPath) {
+            if ($classPath->getFileName() == $classFileName) {
 
-                if (! is_file($path->getPathName()) or ! is_readable($path->getPathName())) {
-                    throw new Loader_Exception(sprintf('Unable to read file %s', $path->getPathName()));
+                if (! is_file($classPath->getPathName()) or ! is_readable($classPath->getPathName())) {
+                    throw new ClassLoaderException(sprintf('Unable to read file %s', $classPath->getPathName()));
                 }
 
-                require_once $path->getPathName();
+                require_once $classPath->getPathName();
 
                 if (! interface_exists($className, false) and ! class_exists($className, false)) {
-                    throw new Loader_Exception(sprintf('No Interface or Class "%s" found in file %s', $className, $path->getPathName()));
+                    throw new ClassLoaderException(sprintf('No Interface or Class "%s" found in file %s', $className, $classPath->getPathName()));
                 }
             }
         }
@@ -214,6 +200,4 @@ class ClassLoader
     {
         return self::$loadedClass;
     }
-
-
 }
