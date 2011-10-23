@@ -70,7 +70,7 @@ class ClassLoader
     final function __construct()
     {
         // SPL nullify existing autoload
-		spl_autoload_register(null, false);
+        spl_autoload_register(null, false);
         spl_autoload_extensions(self::$classExtension);
         spl_autoload_register(array(new self(), 'autoLoad'));
     }
